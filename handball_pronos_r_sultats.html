@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HandBet - Résultats & Pronostics Handball</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#effef6',
+                            100: '#dafee8',
+                            200: '#b8fcd4',
+                            300: '#81f8b9',
+                            400: '#43ed97',
+                            500: '#1ad578',
+                            600: '#0ea75a',
+                            700: '#0f844a',
+                            800: '#11683e',
+                            900: '#105535',
+                            950: '#08301d',
+                        },
+                        dark: {
+                            bg: '#0f172a',
+                            panel: '#1e293b',
+                            border: '#334155'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .odds-btn { transition: all 0.2s ease-in-out; }
+        .odds-btn:hover { background-color: #1ad578; color: #08301d; border-color: #1ad578; transform: translateY(-1px); }
+        .odds-won { background-color: #1ad578; color: #08301d; border-color: #1ad578; font-weight: bold; }
+        .live-indicator { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <nav class="bg-dark-panel border-b border-dark-border sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#" class="flex-shrink-0 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded bg-brand-500 text-dark-bg flex items-center justify-center font-bold text-xl">
+                            <i class="fa-solid fa-hand-spock"></i>
+                        </div>
+                        <span class="font-bold text-xl tracking-tight text-white">Hand<span class="text-brand-500">Bet</span></span>
+                    </a>
+                    <div class="hidden md:ml-10 md:flex md:space-x-8">
+                        <a href="#" class="border-brand-500 text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            En Direct
+                        </a>
+                        <a href="#" class="border-transparent text-gray-300 hover:text-white hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Résultats
+                        </a>
+                        <a href="#" class="border-transparent text-gray-300 hover:text-white hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Pronostics
+                        </a>
+                        <a href="#" class="border-transparent text-gray-300 hover:text-white hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Classements
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-300 hover:text-white font-medium text-sm hidden sm:block">Connexion</button>
+                    <button class="bg-brand-500 hover:bg-brand-600 text-dark-bg px-4 py-2 rounded-lg font-bold text-sm transition-colors shadow-[0_0_15px_rgba(26,213,120,0.3)]">
+                        S'inscrire
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Featured Match Banner -->
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-800 to-slate-900 border border-dark-border mb-8 shadow-2xl">
+            <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            <div class="relative p-6 md:p-8 flex flex-col md:flex-row items-center justify-between">
+                <div class="text-center md:text-left mb-6 md:mb-0 z-10">
+                    <span class="inline-block px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-bold tracking-wider mb-3 uppercase flex items-center gap-2 w-fit mx-auto md:mx-0">
+                        <span class="w-2 h-2 rounded-full bg-red-500 live-indicator"></span> Choc de la journée
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-2">Ligue des Champions</h2>
+                    <p class="text-slate-400 text-sm">Aujourd'hui, 20:45 • Final Four</p>
+                </div>
+                
+                <div class="flex items-center justify-center gap-4 md:gap-8 z-10 w-full md:w-auto">
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 mb-2">
+                            <i class="fa-solid fa-shield-halved text-2xl text-blue-400"></i>
+                        </div>
+                        <span class="font-bold text-lg">Paris SG</span>
+                    </div>
+                    <div class="text-center px-4">
+                        <div class="text-3xl font-black text-brand-500 mb-1">VS</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 mb-2">
+                            <i class="fa-solid fa-shield text-2xl text-red-400"></i>
+                        </div>
+                        <span class="font-bold text-lg">THW Kiel</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 md:mt-0 flex gap-2 w-full md:w-auto z-10">
+                    <button class="flex-1 md:w-20 py-3 rounded-lg border border-dark-border bg-dark-bg hover:bg-brand-500 hover:text-dark-bg hover:border-brand-500 transition-all font-bold text-center group">
+                        <div class="text-xs text-slate-400 group-hover:text-dark-bg/70 mb-1">1</div>
+                        <div class="text-lg">1.85</div>
+                    </button>
+                    <button class="flex-1 md:w-20 py-3 rounded-lg border border-dark-border bg-dark-bg hover:bg-brand-500 hover:text-dark-bg hover:border-brand-500 transition-all font-bold text-center group">
+                        <div class="text-xs text-slate-400 group-hover:text-dark-bg/70 mb-1">N</div>
+                        <div class="text-lg">8.50</div>
+                    </button>
+                    <button class="flex-1 md:w-20 py-3 rounded-lg border border-dark-border bg-dark-bg hover:bg-brand-500 hover:text-dark-bg hover:border-brand-500 transition-all font-bold text-center group">
+                        <div class="text-xs text-slate-400 group-hover:text-dark-bg/70 mb-1">2</div>
+                        <div class="text-lg">2.10</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Matches -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Filters -->
+                <div class="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+                    <button class="px-4 py-2 rounded-full bg-brand-500 text-dark-bg font-semibold text-sm whitespace-nowrap">Tous les matchs</button>
+                    <button class="px-4 py-2 rounded-full bg-dark-panel border border-dark-border hover:bg-slate-700 text-sm font-medium whitespace-nowrap transition-colors">Starligue 🇫🇷</button>
+                    <button class="px-4 py-2 rounded-full bg-dark-panel border border-dark-border hover:bg-slate-700 text-sm font-medium whitespace-nowrap transition-colors">Bundesliga 🇩🇪</button>
+                    <button class="px-4 py-2 rounded-full bg-dark-panel border border-dark-border hover:bg-slate-700 text-sm font-medium whitespace-nowrap transition-colors">Ligue des Champions 🇪🇺</button>
+                </div>
+
+                <!-- Matches Container -->
+                <div id="matches-container" class="space-y-4">
+                    <!-- Matches will be injected here by JS -->
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Promo Widget -->
+                <div class="bg-gradient-to-br from-brand-600 to-brand-800 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
+                    <i class="fa-solid fa-gift absolute -right-4 -bottom-4 text-8xl text-white/10"></i>
+                    <h3 class="font-bold text-xl mb-2 relative z-10">Bonus de Bienvenue</h3>
+                    <p class="text-brand-100 text-sm mb-4 relative z-10">Votre 1er pari remboursé jusqu'à 100€ s'il est perdant !</p>
+                    <button class="w-full bg-white text-brand-800 font-bold py-2 rounded-lg hover:bg-gray-100 transition-colors relative z-10">
+                        En profiter
+                    </button>
+                </div>
+
+                <!-- Mini Standings -->
+                <div class="bg-dark-panel rounded-xl border border-dark-border overflow-hidden">
+                    <div class="p-4 border-b border-dark-border bg-slate-800/50 flex justify-between items-center">
+                        <h3 class="font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-ol text-brand-500"></i> Classement Starligue
+                        </h3>
+                        <a href="#" class="text-xs text-brand-500 hover:underline">Voir tout</a>
+                    </div>
+                    <div class="p-0">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-slate-400 bg-slate-800/30">
+                                <tr>
+                                    <th class="px-4 py-2 font-medium">#</th>
+                                    <th class="px-4 py-2 font-medium">Équipe</th>
+                                    <th class="px-4 py-2 font-medium text-center">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standings-body" class="divide-y divide-dark-border">
+                                <!-- Standings injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Betting Tips -->
+                <div class="bg-dark-panel rounded-xl border border-dark-border p-4">
+                    <h3 class="font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-orange-500"></i> Pari du jour
+                    </h3>
+                    <div class="bg-slate-800 rounded-lg p-3 border border-slate-700">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-slate-400">Montpellier - Nantes</span>
+                            <span class="text-xs font-bold text-brand-500">Cote: 2.35</span>
+                        </div>
+                        <p class="text-sm font-medium text-white mb-3">Plus de 60.5 buts dans le match</p>
+                        <button class="w-full py-1.5 rounded bg-brand-500 hover:bg-brand-600 text-dark-bg font-bold text-sm transition-colors">
+                            Ajouter au panier
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark-panel border-t border-dark-border mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-2">
+                    <a href="#" class="flex-shrink-0 flex items-center gap-2 mb-4">
+                        <div class="w-6 h-6 rounded bg-brand-500 text-dark-bg flex items-center justify-center font-bold text-sm">
+                            <i class="fa-solid fa-hand-spock"></i>
+                        </div>
+                        <span class="font-bold text-lg tracking-tight text-white">Hand<span class="text-brand-500">Bet</span></span>
+                    </a>
+                    <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
+                        La plateforme n°1 pour les statistiques, résultats en direct et cotes de paris sportifs dédiés au Handball. Pariez intelligemment.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">Liens Utiles</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#" class="hover:text-brand-500 transition-colors">Pronostics experts</a></li>
+                        <li><a href="#" class="hover:text-brand-500 transition-colors">Règles du Handball</a></li>
+                        <li><a href="#" class="hover:text-brand-500 transition-colors">Comparateur de cotes</a></li>
+                        <li><a href="#" class="hover:text-brand-500 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-dark-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-xs text-slate-500 text-center md:text-left">
+                    <p>🔞 Les jeux d'argent et de hasard peuvent être dangereux : pertes d'argent, conflits familiaux, addiction...</p>
+                    <p>Retrouvez nos conseils sur joueurs-info-service.fr (09 74 75 13 13 - appel non surtaxé)</p>
+                </div>
+                <div class="text-slate-400 text-sm">
+                    &copy; 2026 HandBet. Tous droits réservés.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mock data for handball matches
+        const matchesData = [
+            {
+                id: 1,
+                league: 'Starligue 🇫🇷',
+                status: 'live',
+                time: "48'",
+                homeTeam: 'Montpellier HB',
+                awayTeam: 'HBC Nantes',
+                homeScore: 24,
+                awayScore: 22,
+                odds: { 1: 1.15, X: 11.00, 2: 6.50 },
+                winner: null
+            },
+            {
+                id: 2,
+                league: 'Bundesliga 🇩🇪',
+                status: 'finished',
+                time: 'Terminé',
+                homeTeam: 'Flensburg',
+                awayTeam: 'Füchse Berlin',
+                homeScore: 31,
+                awayScore: 28,
+                odds: { 1: 1.90, X: 8.50, 2: 2.15 },
+                winner: '1' // 1: Home, X: Draw, 2: Away
+            },
+            {
+                id: 3,
+                league: 'Starligue 🇫🇷',
+                status: 'finished',
+                time: 'Terminé',
+                homeTeam: 'Chambéry',
+                awayTeam: 'Saint-Raphaël',
+                homeScore: 29,
+                awayScore: 29,
+                odds: { 1: 2.05, X: 8.00, 2: 2.05 },
+                winner: 'X'
+            },
+            {
+                id: 4,
+                league: 'Ligue des Champions 🇪🇺',
+                status: 'upcoming',
+                time: "Auj. 20:45",
+                homeTeam: 'Paris SG',
+                awayTeam: 'THW Kiel',
+                homeScore: null,
+                awayScore: null,
+                odds: { 1: 1.85, X: 8.50, 2: 2.10 },
+                winner: null
+            },
+            {
+                id: 5,
+                league: 'Bundesliga 🇩🇪',
+                status: 'upcoming',
+                time: "Demain 18:30",
+                homeTeam: 'Magdeburg',
+                awayTeam: 'Rhein-Neckar',
+                homeScore: null,
+                awayScore: null,
+                odds: { 1: 1.35, X: 9.50, 2: 4.20 },
+                winner: null
+            }
+        ];
+
+        // Mock data for standings
+        const standingsData = [
+            { rank: 1, team: 'Paris SG', pts: 48 },
+            { rank: 2, team: 'Montpellier', pts: 44 },
+            { rank: 3, team: 'HBC Nantes', pts: 42 },
+            { rank: 4, team: 'Toulouse', pts: 35 },
+            { rank: 5, team: 'Chambéry', pts: 31 },
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Render Matches
+            const container = document.getElementById('matches-container');
+            
+            matchesData.forEach(match => {
+                // Determine styling based on status
+                let timeBadge = '';
+                let scoreDisplay = '';
+                
+                if (match.status === 'live') {
+                    timeBadge = `<span class="text-xs font-bold text-red-500 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-red-500 live-indicator"></span> ${match.time}</span>`;
+                    scoreDisplay = `<div class="text-xl font-black text-brand-400">${match.homeScore} - ${match.awayScore}</div>`;
+                } else if (match.status === 'finished') {
+                    timeBadge = `<span class="text-xs font-semibold text-slate-500">${match.time}</span>`;
+                    scoreDisplay = `<div class="text-xl font-bold text-white">${match.homeScore} - ${match.awayScore}</div>`;
+                } else {
+                    timeBadge = `<span class="text-xs font-semibold text-slate-400">${match.time}</span>`;
+                    scoreDisplay = `<div class="text-sm font-medium text-slate-500">À venir</div>`;
+                }
+
+                // Determine Odds styling (highlighting winners for finished matches)
+                const getOddClass = (type) => {
+                    const base = "flex flex-col items-center justify-center py-2 px-1 rounded border border-dark-border bg-slate-800/50 odds-btn w-full sm:w-16 flex-1 sm:flex-none cursor-pointer";
+                    if (match.status === 'finished' && match.winner === type) {
+                        return `${base} odds-won`;
+                    }
+                    return base;
+                };
+
+                const cardHTML = `
+                    <div class="bg-dark-panel rounded-xl border border-dark-border p-4 hover:border-slate-600 transition-colors">
+                        <div class="flex flex-col sm:flex-row items-center gap-4">
+                            
+                            <!-- Match Info & Score -->
+                            <div class="flex-grow w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div class="w-full sm:w-1/4 text-center sm:text-left">
+                                    <div class="text-xs text-slate-400 mb-1">${match.league}</div>
+                                    ${timeBadge}
+                                </div>
+                                
+                                <div class="w-full sm:w-2/4 flex items-center justify-between px-2 sm:px-8">
+                                    <div class="font-semibold text-sm sm:text-base text-right flex-1 ${match.winner === '1' ? 'text-white' : 'text-slate-300'}">${match.homeTeam}</div>
+                                    <div class="mx-4 flex-shrink-0 text-center w-16">
+                                        ${scoreDisplay}
+                                    </div>
+                                    <div class="font-semibold text-sm sm:text-base text-left flex-1 ${match.winner === '2' ? 'text-white' : 'text-slate-300'}">${match.awayTeam}</div>
+                                </div>
+                            </div>
+
+                            <!-- Betting Odds -->
+                            <div class="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+                                <div class="${getOddClass('1')}">
+                                    <span class="text-[10px] text-slate-400 mb-0.5">1</span>
+                                    <span class="text-sm font-bold">${match.odds['1'].toFixed(2)}</span>
+                                </div>
+                                <div class="${getOddClass('X')}">
+                                    <span class="text-[10px] text-slate-400 mb-0.5">N</span>
+                                    <span class="text-sm font-bold">${match.odds['X'].toFixed(2)}</span>
+                                </div>
+                                <div class="${getOddClass('2')}">
+                                    <span class="text-[10px] text-slate-400 mb-0.5">2</span>
+                                    <span class="text-sm font-bold">${match.odds['2'].toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            });
+
+            // Render Standings
+            const standingsContainer = document.getElementById('standings-body');
+            standingsData.forEach((team, index) => {
+                const isLeader = index === 0;
+                const rowHTML = `
+                    <tr class="hover:bg-slate-800/50 transition-colors border-b border-dark-border/50 last:border-0">
+                        <td class="px-4 py-3 text-xs font-bold ${isLeader ? 'text-brand-500' : 'text-slate-400'}">${team.rank}</td>
+                        <td class="px-4 py-3 text-sm font-medium text-slate-200">${team.team}</td>
+                        <td class="px-4 py-3 text-sm font-bold text-center text-white">${team.pts}</td>
+                    </tr>
+                `;
+                standingsContainer.insertAdjacentHTML('beforeend', rowHTML);
+            });
+        });
+    </script>
+</body>
+</html>
